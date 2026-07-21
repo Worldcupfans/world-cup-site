@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ترتيب الدوريات مباشر | كأس العالم 2026</title>
-<meta name="description" content="جداول ترتيب الدوريات الخمس الكبرى، الدوري البرازيلي، الأرجنتيني، السعودي، وتصنيف الفيفا العالمي.">
+<meta name="description" content="جداول ترتيب الدوريات الخمس الكبرى والدوري البرازيلي (بيانات الموسم الحالي)، وتصنيف الفيفا العالمي.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -164,10 +164,10 @@
   <div class="wrap">
     <div class="brand-row">
       <span class="dot-live"></span>
-      <span class="brand">بيانات موسم 2023 · الخطة المجانية</span>
+      <span class="brand">بيانات الموسم الحالي · تحديث دوري</span>
     </div>
     <h1>ترتيب <span>الدوريات</span> والفيفا</h1>
-    <p>الدوريات الخمس الكبرى + البرازيلي + الأرجنتيني + السعودي، وتصنيف الفيفا العالمي.</p>
+    <p>الدوريات الخمس الكبرى + البرازيلي (بيانات الموسم الحالي)، وتصنيف الفيفا العالمي.</p>
 
     <nav class="league-tabs" id="leagueTabs"></nav>
   </div>
@@ -184,7 +184,7 @@
     <div class="table-wrap" id="tableWrap">
       <div class="state-msg"><div class="spinner"></div>جاري جلب الترتيب...</div>
     </div>
-    <div class="note-box">⚠️ الخطة المجانية لـ API-Football ما تسمح حاليًا إلا ببيانات مواسم 2022-2024، لذلك الجدول يعرض ترتيب موسم 2023 (تاريخي، مو الموسم الحالي). للحصول على بيانات الموسم الجاري لحظيًا، الحل الوحيد هو ترقية الحساب لخطة مدفوعة بـ API-Football.</div>
+    <div class="note-box">البيانات تجي من football-data.org (مجاني) وتشمل الموسم الحالي الفعلي لهذي الستة دوريات فقط. الدوري السعودي والأرجنتيني ما لهم حاليًا مصدر مجاني موثوق يعطي بيانات حية — إضافتهم تحتاج ترقية لخطة مدفوعة مستقبلًا.</div>
   </section>
 
   <section id="fifaSection">
@@ -199,18 +199,16 @@
 
 <script>
 /* ===== إعدادات: الدوريات ===== */
-const API_KEY = "4bf868568f9e50ceb77eae16c0b7e16b"; // مفتاحك الخاص من api-football.com
-const API_BASE = "https://v3.football.api-sports.io";
+const API_TOKEN = "c6bc222869df4de096fcf20950854ff5"; // مفتاحك الخاص من football-data.org
+const API_BASE = "https://api.football-data.org/v4";
 
 const LEAGUES = [
-  { id: 39,  season: 2023, name: "الإنجليزي" },
-  { id: 140, season: 2023, name: "الإسباني" },
-  { id: 135, season: 2023, name: "الإيطالي" },
-  { id: 78,  season: 2023, name: "الألماني" },
-  { id: 61,  season: 2023, name: "الفرنسي" },
-  { id: 71,  season: 2023, name: "البرازيلي" },
-  { id: 128, season: 2023, name: "الأرجنتيني" },
-  { id: 307, season: 2023, name: "السعودي" },
+  { code: "PL",  name: "الإنجليزي" },
+  { code: "PD",  name: "الإسباني" },
+  { code: "SA",  name: "الإيطالي" },
+  { code: "BL1", name: "الألماني" },
+  { code: "FL1", name: "الفرنسي" },
+  { code: "BSA", name: "البرازيلي" },
 ];
 
 /* تصنيف فيفا -- جدول ثابت (يحدَّث يدويًا بعد كل إصدار رسمي) */
@@ -278,18 +276,18 @@ function renderTable(standings){
   standings.forEach(team => {
     rows += `
       <tr>
-        <td><span class="pos-badge">${team.rank}</span></td>
+        <td><span class="pos-badge">${team.position}</span></td>
         <td>
           <div class="team-cell">
-            <img src="${team.team.logo}" alt="" loading="lazy" onerror="this.style.display='none'">
+            <img src="${team.team.crest || ''}" alt="" loading="lazy" onerror="this.style.display='none'">
             <span>${team.team.name}</span>
           </div>
         </td>
-        <td>${team.all.played}</td>
-        <td>${team.all.win}</td>
-        <td>${team.all.draw}</td>
-        <td>${team.all.lose}</td>
-        <td>${team.goalsDiff > 0 ? "+" : ""}${team.goalsDiff}</td>
+        <td>${team.playedGames}</td>
+        <td>${team.won}</td>
+        <td>${team.draw}</td>
+        <td>${team.lost}</td>
+        <td>${team.goalDifference > 0 ? "+" : ""}${team.goalDifference}</td>
         <td class="pts">${team.points}</td>
       </tr>`;
   });
@@ -317,19 +315,19 @@ async function fetchLeague(i, force){
 
   renderLoading();
   try{
-    const res = await fetch(`${API_BASE}/standings?league=${lg.id}&season=${lg.season}`, {
-      headers: { "x-apisports-key": API_KEY }
+    const res = await fetch(`${API_BASE}/competitions/${lg.code}/standings`, {
+      headers: { "X-Auth-Token": API_TOKEN }
     });
-    if(!res.ok) throw new Error("فشل الاتصال بمصدر البيانات (" + res.status + ")");
+    if(!res.ok){
+      if(res.status === 429){
+        throw new Error("تجاوزنا حد الطلبات المسموح بالدقيقة، جرب بعد دقيقة");
+      }
+      throw new Error("فشل الاتصال بمصدر البيانات (" + res.status + ")");
+    }
     const data = await res.json();
 
-    if(data.errors && Object.keys(data.errors).length > 0){
-      const firstError = Object.values(data.errors)[0];
-      renderError("تعذر جلب البيانات: " + firstError);
-      return;
-    }
-
-    const standings = data.response?.[0]?.league?.standings?.[0] || [];
+    const totalGroup = (data.standings || []).find(s => s.type === "TOTAL") || data.standings?.[0];
+    const standings = totalGroup?.table || [];
     cache[i] = { data: standings, time: new Date().toLocaleTimeString("ar-EG") };
     renderTable(standings);
     updatedAtEl.textContent = "آخر تحديث: " + cache[i].time;
@@ -337,6 +335,7 @@ async function fetchLeague(i, force){
     renderError("تعذر جلب البيانات حاليًا. جرب تحديث الصفحة بعد قليل. (" + err.message + ")");
   }
 }
+
 
 function selectLeague(i){
   activeIndex = i;
@@ -347,7 +346,7 @@ function selectLeague(i){
 
 function restartAutoRefresh(){
   if(refreshTimer) clearInterval(refreshTimer);
-  refreshTimer = setInterval(() => fetchLeague(activeIndex, true), 15 * 60 * 1000); // كل 15 دقيقة
+  refreshTimer = setInterval(() => fetchLeague(activeIndex, true), 5 * 60 * 1000); // كل 5 دقائق
 }
 
 document.getElementById("refreshBtn").addEventListener("click", () => fetchLeague(activeIndex, true));
