@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ترتيب الدوريات مباشر | كأس العالم 2026</title>
+<meta name="description" content="جداول ترتيب الدوريات الخمس الكبرى، الدوري البرازيلي، الأرجنتيني، السعودي، وتصنيف الفيفا العالمي.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800;900&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --night:#0A1826;
+    --panel:#102A40;
+    --panel-line:#1D3F5C;
+    --pitch:#2E9E5B;
+    --pitch-dim:#1F6E42;
+    --gold:#E3B23C;
+    --card-red:#E24C4B;
+    --ink:#F3F1E7;
+    --ink-dim:#9FB4C7;
+    --radius:16px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background: radial-gradient(circle at 50% 0%, #123356 0%, var(--night) 55%);
+    color:var(--ink);
+    font-family:'Tajawal', sans-serif;
+    line-height:1.6;
+    padding-bottom:50px;
+    min-height:100vh;
+  }
+  h1,h2,h3,.brand{font-family:'Cairo', sans-serif;}
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:680px; margin:0 auto; padding:0 14px;}
+
+  header.top{
+    padding:20px 0;
+    background:linear-gradient(180deg, #0D2038 0%, #0A1826 100%);
+    border-bottom:3px solid var(--pitch);
+  }
+  .brand-row{display:flex; align-items:center; gap:8px; font-size:13px; color:var(--gold);}
+  .brand-row .dot-live{
+    width:8px; height:8px; border-radius:50%; background:var(--card-red);
+    animation:pulse 1.6s infinite;
+  }
+  @media (prefers-reduced-motion: reduce){ .brand-row .dot-live{animation:none;} }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(226,76,75,.55);}
+    70%{box-shadow:0 0 0 8px rgba(226,76,75,0);}
+    100%{box-shadow:0 0 0 0 rgba(226,76,75,0);}
+  }
+  header.top h1{font-size:24px; font-weight:900; margin-top:8px;}
+  header.top h1 span{color:var(--gold);}
+  header.top p{color:var(--ink-dim); font-size:13px; margin-top:4px;}
+
+  nav.league-tabs{
+    display:flex; gap:8px; margin-top:16px; overflow-x:auto;
+    scrollbar-width:none; padding-bottom:2px;
+  }
+  nav.league-tabs::-webkit-scrollbar{display:none;}
+  nav.league-tabs button{
+    flex:0 0 auto; font-family:'Cairo',sans-serif;
+    font-size:13px; font-weight:700; padding:10px 16px;
+    border:1px solid var(--panel-line); border-radius:999px;
+    color:var(--ink-dim); background:rgba(255,255,255,0.03);
+    white-space:nowrap; cursor:pointer;
+  }
+  nav.league-tabs button.active{
+    background:var(--pitch); border-color:var(--pitch); color:#06170D;
+  }
+
+  section{padding:22px 0 6px;}
+  .panel-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:12px;
+  }
+  .panel-head h2{font-size:18px; font-weight:800;}
+  .refresh-btn{
+    display:flex; align-items:center; gap:6px;
+    font-size:12px; font-weight:700; color:var(--gold);
+    background:rgba(227,178,60,0.08);
+    border:1px solid rgba(227,178,60,0.3);
+    padding:7px 12px; border-radius:999px; cursor:pointer;
+  }
+  .refresh-btn:active{opacity:0.7;}
+  .updated-at{font-size:11px; color:var(--ink-dim); margin-bottom:10px;}
+
+  .table-wrap{
+    background:var(--panel);
+    border:1px solid var(--panel-line);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  thead th{
+    background:var(--pitch-dim); color:var(--ink);
+    font-family:'Cairo',sans-serif; font-weight:700;
+    padding:9px 4px; text-align:center; font-size:11px;
+  }
+  thead th:first-child, tbody td:first-child{text-align:center; width:26px;}
+  tbody td{padding:9px 4px; text-align:center; border-bottom:1px solid rgba(29,63,92,0.5);}
+  tbody tr:last-child td{border-bottom:none;}
+  .team-cell{display:flex; align-items:center; gap:6px; text-align:right !important; justify-content:flex-start;}
+  .team-cell img{width:18px; height:18px; object-fit:contain;}
+  .team-cell span{font-weight:700; font-size:12.5px;}
+  .pts{font-weight:800; color:var(--gold); font-family:'Cairo',sans-serif;}
+  .pos-badge{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:20px; height:20px; border-radius:6px;
+    font-family:'Cairo',sans-serif; font-weight:800; font-size:11px;
+    background:rgba(255,255,255,0.06); color:var(--ink-dim);
+  }
+  tbody tr:nth-child(-n+4) .pos-badge{background:rgba(46,158,91,0.25); color:var(--pitch);}
+
+  .state-msg{
+    padding:30px 16px; text-align:center; color:var(--ink-dim); font-size:13px;
+  }
+  .state-msg .spinner{
+    width:24px; height:24px; border-radius:50%;
+    border:3px solid var(--panel-line); border-top-color:var(--pitch);
+    margin:0 auto 10px; animation:spin 0.8s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce){ .spinner{animation:none;} }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* FIFA ranking */
+  .fifa-list{
+    background:var(--panel); border:1px solid var(--panel-line);
+    border-radius:var(--radius); overflow:hidden;
+  }
+  .fifa-row{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 14px; border-bottom:1px solid rgba(29,63,92,0.5);
+    font-size:13.5px;
+  }
+  .fifa-row:last-child{border-bottom:none;}
+  .fifa-row .rank{
+    font-family:'Cairo',sans-serif; font-weight:800; color:var(--gold);
+    width:22px; text-align:center; font-size:13px;
+  }
+  .fifa-row .flag{font-size:17px;}
+  .fifa-row .name{flex:1; font-weight:700;}
+  .fifa-row .pts{font-size:11px; color:var(--ink-dim); font-family:'Tajawal',sans-serif; font-weight:400;}
+
+  .note-box{
+    margin-top:10px; font-size:11.5px; color:var(--ink-dim);
+    background:rgba(255,255,255,0.02); border:1px dashed var(--panel-line);
+    border-radius:10px; padding:10px 12px;
+  }
+
+  footer{
+    margin-top:36px; padding:18px 0; text-align:center;
+    color:var(--ink-dim); font-size:12px; border-top:1px solid var(--panel-line);
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand-row">
+      <span class="dot-live"></span>
+      <span class="brand">تحديث دوري · مو لحظي 100%</span>
+    </div>
+    <h1>ترتيب <span>الدوريات</span> والفيفا</h1>
+    <p>الدوريات الخمس الكبرى + البرازيلي + الأرجنتيني + السعودي، وتصنيف الفيفا العالمي.</p>
+
+    <nav class="league-tabs" id="leagueTabs"></nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="standingsSection">
+    <div class="panel-head">
+      <h2 id="activeLeagueName">جاري التحميل...</h2>
+      <button class="refresh-btn" id="refreshBtn">↻ تحديث</button>
+    </div>
+    <div class="updated-at" id="updatedAt"></div>
+    <div class="table-wrap" id="tableWrap">
+      <div class="state-msg"><div class="spinner"></div>جاري جلب الترتيب...</div>
+    </div>
+    <div class="note-box">الترتيب يتحدث عند فتح كل دوري ويُحفظ مؤقتًا — التحديث التلقائي كل 15 دقيقة للدوري المفتوح فقط (لتوفير حصة الطلبات اليومية).</div>
+  </section>
+
+  <section id="fifaSection">
+    <div class="panel-head"><h2>🏆 تصنيف الفيفا العالمي</h2></div>
+    <div class="updated-at">آخر تحديث رسمي من الفيفا: 11 يونيو 2026 (يصدر كل شهرين تقريبًا)</div>
+    <div class="fifa-list" id="fifaList"></div>
+    <div class="note-box">تصنيف الفيفا يصدر رسميًا كل شهرين تقريبًا، لذلك هذا الجدول ثابت ويحتاج تحديث يدوي من صاحب الموقع بعد كل إصدار جديد — مو مباشر مثل جداول الدوريات.</div>
+  </section>
+
+  <footer>جميع الحقوق محفوظة © 2026 — بيانات الدوريات عبر API-Football</footer>
+</main>
+
+<script>
+/* ===== إعدادات: الدوريات ===== */
+const API_KEY = "4bf868568f9e50ceb77eae16c0b7e16b"; // مفتاحك الخاص من api-football.com
+const API_BASE = "https://v3.football.api-sports.io";
+
+const LEAGUES = [
+  { id: 39,  season: 2025, name: "الإنجليزي" },
+  { id: 140, season: 2025, name: "الإسباني" },
+  { id: 135, season: 2025, name: "الإيطالي" },
+  { id: 78,  season: 2025, name: "الألماني" },
+  { id: 61,  season: 2025, name: "الفرنسي" },
+  { id: 71,  season: 2026, name: "البرازيلي" },
+  { id: 128, season: 2026, name: "الأرجنتيني" },
+  { id: 307, season: 2025, name: "السعودي" },
+];
+
+/* تصنيف فيفا -- جدول ثابت (يحدَّث يدويًا بعد كل إصدار رسمي) */
+const FIFA_RANKING = [
+  {r:1, flag:"🇪🇸", name:"إسبانيا", pts:"1900+"},
+  {r:2, flag:"🇦🇷", name:"الأرجنتين", pts:"1870+"},
+  {r:3, flag:"🇫🇷", name:"فرنسا", pts:"1860+"},
+  {r:4, flag:"🏴", name:"إنجلترا", pts:"1820+"},
+  {r:5, flag:"🇵🇹", name:"البرتغال", pts:"1760+"},
+  {r:6, flag:"🇧🇷", name:"البرازيل", pts:"1755+"},
+  {r:7, flag:"🇳🇱", name:"هولندا", pts:"1750+"},
+  {r:8, flag:"🇲🇦", name:"المغرب", pts:"1750+"},
+  {r:9, flag:"🇧🇪", name:"بلجيكا", pts:"1730+"},
+  {r:10, flag:"🇩🇪", name:"ألمانيا", pts:"1725+"},
+  {r:11, flag:"🇭🇷", name:"كرواتيا", pts:"1715+"},
+  {r:12, flag:"🇮🇹", name:"إيطاليا", pts:"1700+"},
+  {r:13, flag:"🇨🇴", name:"كولومبيا", pts:"1690+"},
+  {r:14, flag:"🇸🇳", name:"السنغال", pts:"1685+"},
+  {r:15, flag:"🇲🇽", name:"المكسيك", pts:"1680+"},
+  {r:16, flag:"🇺🇸", name:"الولايات المتحدة", pts:"1670+"},
+  {r:17, flag:"🇺🇾", name:"أوروغواي", pts:"1670+"},
+  {r:18, flag:"🇯🇵", name:"اليابان", pts:"1655+"},
+  {r:19, flag:"🇨🇭", name:"سويسرا", pts:"1645+"},
+  {r:20, flag:"🇩🇰", name:"الدنمارك", pts:"1615+"},
+];
+
+/* ===== حالة داخلية ===== */
+const cache = {}; // يخزن نتائج كل دوري بالذاكرة خلال الجلسة
+let activeIndex = 0;
+let refreshTimer = null;
+
+const tabsEl = document.getElementById("leagueTabs");
+const tableWrapEl = document.getElementById("tableWrap");
+const activeNameEl = document.getElementById("activeLeagueName");
+const updatedAtEl = document.getElementById("updatedAt");
+
+function buildTabs(){
+  LEAGUES.forEach((lg, i) => {
+    const btn = document.createElement("button");
+    btn.textContent = lg.name;
+    if(i === 0) btn.classList.add("active");
+    btn.addEventListener("click", () => selectLeague(i));
+    tabsEl.appendChild(btn);
+  });
+}
+
+function setActiveTabUI(i){
+  [...tabsEl.children].forEach((b, idx) => b.classList.toggle("active", idx === i));
+}
+
+function renderLoading(){
+  tableWrapEl.innerHTML = `<div class="state-msg"><div class="spinner"></div>جاري جلب الترتيب...</div>`;
+}
+
+function renderError(msg){
+  tableWrapEl.innerHTML = `<div class="state-msg">⚠️ ${msg}</div>`;
+}
+
+function renderTable(standings){
+  if(!standings || standings.length === 0){
+    renderError("لا توجد بيانات ترتيب متاحة حاليًا لهذا الدوري (قد يكون الموسم لم يبدأ بعد).");
+    return;
+  }
+  let rows = "";
+  standings.forEach(team => {
+    rows += `
+      <tr>
+        <td><span class="pos-badge">${team.rank}</span></td>
+        <td>
+          <div class="team-cell">
+            <img src="${team.team.logo}" alt="" loading="lazy" onerror="this.style.display='none'">
+            <span>${team.team.name}</span>
+          </div>
+        </td>
+        <td>${team.all.played}</td>
+        <td>${team.all.win}</td>
+        <td>${team.all.draw}</td>
+        <td>${team.all.lose}</td>
+        <td>${team.goalsDiff > 0 ? "+" : ""}${team.goalsDiff}</td>
+        <td class="pts">${team.points}</td>
+      </tr>`;
+  });
+
+  tableWrapEl.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>الفريق</th><th>لعب</th><th>ف</th><th>ت</th><th>خ</th><th>ف.أ</th><th>نقاط</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+async function fetchLeague(i, force){
+  const lg = LEAGUES[i];
+  activeNameEl.textContent = `🏆 الدوري ${lg.name}`;
+
+  if(!force && cache[i]){
+    renderTable(cache[i].data);
+    updatedAtEl.textContent = "آخر تحديث: " + cache[i].time;
+    return;
+  }
+
+  renderLoading();
+  try{
+    const res = await fetch(`${API_BASE}/standings?league=${lg.id}&season=${lg.season}`, {
+      headers: { "x-apisports-key": API_KEY }
+    });
+    if(!res.ok) throw new Error("فشل الاتصال بمصدر البيانات (" + res.status + ")");
+    const data = await res.json();
+
+    if(data.errors && Object.keys(data.errors).length > 0){
+      const firstError = Object.values(data.errors)[0];
+      renderError("تعذر جلب البيانات: " + firstError);
+      return;
+    }
+
+    const standings = data.response?.[0]?.league?.standings?.[0] || [];
+    cache[i] = { data: standings, time: new Date().toLocaleTimeString("ar-EG") };
+    renderTable(standings);
+    updatedAtEl.textContent = "آخر تحديث: " + cache[i].time;
+  }catch(err){
+    renderError("تعذر جلب البيانات حاليًا. جرب تحديث الصفحة بعد قليل. (" + err.message + ")");
+  }
+}
+
+function selectLeague(i){
+  activeIndex = i;
+  setActiveTabUI(i);
+  fetchLeague(i, false);
+  restartAutoRefresh();
+}
+
+function restartAutoRefresh(){
+  if(refreshTimer) clearInterval(refreshTimer);
+  refreshTimer = setInterval(() => fetchLeague(activeIndex, true), 15 * 60 * 1000); // كل 15 دقيقة
+}
+
+document.getElementById("refreshBtn").addEventListener("click", () => fetchLeague(activeIndex, true));
+
+function renderFifa(){
+  const el = document.getElementById("fifaList");
+  el.innerHTML = FIFA_RANKING.map(t => `
+    <div class="fifa-row">
+      <span class="rank">${t.r}</span>
+      <span class="flag">${t.flag}</span>
+      <span class="name">${t.name}</span>
+      <span class="pts">${t.pts}</span>
+    </div>
+  `).join("");
+}
+
+/* ===== تشغيل ===== */
+buildTabs();
+renderFifa();
+selectLeague(0);
+</script>
+
+</body>
+</html>
