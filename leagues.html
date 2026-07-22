@@ -199,8 +199,7 @@
 
 <script>
 /* ===== إعدادات: الدوريات ===== */
-const API_TOKEN = "c6bc222869df4de096fcf20950854ff5"; // مفتاحك الخاص من football-data.org
-const API_BASE = "https://api.football-data.org/v4";
+const API_BASE = "https://hidden-star-92ca.dmarradona7.workers.dev"; // الوسيط (Proxy) على Cloudflare
 
 const LEAGUES = [
   { code: "PL",  name: "الإنجليزي" },
@@ -315,9 +314,7 @@ async function fetchLeague(i, force){
 
   renderLoading();
   try{
-    const res = await fetch(`${API_BASE}/competitions/${lg.code}/standings`, {
-      headers: { "X-Auth-Token": API_TOKEN }
-    });
+    const res = await fetch(API_BASE + "/standings/" + lg.code);
     if(!res.ok){
       if(res.status === 429){
         throw new Error("تجاوزنا حد الطلبات المسموح بالدقيقة، جرب بعد دقيقة");
